@@ -1,0 +1,24 @@
+from fastapi import FastAPI
+from app.schemas import TransactionCreate, TransactionOut
+
+app = FastAPI()
+
+transactions_db = []
+
+
+@app.post("/transactions",status_code=201, response_model=TransactionOut)
+async def create_transaction(transaction : TransactionCreate):
+
+    request_dict = transaction.model_dump()
+    existing_ids = [t["id"] for t in transactions_db]
+    request_dict["id"] = max(existing_ids,default=0)+1
+
+    transactions_db.append(request_dict)
+    return request_dict
+
+@app.get("/transactions",response_model=list[TransactionOut])
+async def list_transaction():
+    return transactions_db
+
+
+
