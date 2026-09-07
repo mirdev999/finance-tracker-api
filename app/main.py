@@ -1,10 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from app.schemas import TransactionCreate, TransactionOut
 
 app = FastAPI()
 
 transactions_db = []
-
 
 @app.post("/transactions",status_code=201, response_model=TransactionOut)
 async def create_transaction(transaction : TransactionCreate):
@@ -20,5 +19,9 @@ async def create_transaction(transaction : TransactionCreate):
 async def list_transaction():
     return transactions_db
 
-
-
+@app.get("/transactions/{transaction_id}",response_model=TransactionOut)
+async def get_by_id(transaction_id:int):
+    for transaction in transactions_db:
+        if transaction["id"] == transaction_id:
+            return transaction
+    raise HTTPException(status_code=404,detail="Transaction not found")
