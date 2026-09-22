@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status, Response
 from app.schemas import TransactionCreate, TransactionOut
 
 app = FastAPI()
@@ -24,4 +24,12 @@ async def get_by_id(transaction_id:int):
     for transaction in transactions_db:
         if transaction["id"] == transaction_id:
             return transaction
+    raise HTTPException(status_code=404,detail="Transaction not found")
+
+@app.delete("/transactions/{transaction_id}", status_code=204)
+async def delete_transaction(transaction_id : int):
+    for transaction_to_delete in transactions_db:
+        if transaction_to_delete["id"] == transaction_id:
+            transactions_db.remove(transaction_to_delete)
+            return
     raise HTTPException(status_code=404,detail="Transaction not found")
