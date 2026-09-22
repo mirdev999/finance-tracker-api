@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Response
+from fastapi import FastAPI, HTTPException
 from app.schemas import TransactionCreate, TransactionOut
 
 app = FastAPI()
