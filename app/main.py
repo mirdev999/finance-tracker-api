@@ -33,3 +33,13 @@ async def delete_transaction(transaction_id : int):
             transactions_db.remove(transaction_to_delete)
             return
     raise HTTPException(status_code=404,detail="Transaction not found")
+
+@app.put("/transactions/{transaction_id}", response_model=TransactionOut)
+async def update_transaction(transaction_id : int, transaction : TransactionCreate):
+    request_dict = transaction.model_dump()
+    request_dict["id"] = transaction_id
+    for i,t in enumerate(transactions_db):
+        if t["id"] == transaction_id:
+            transactions_db[i] = request_dict
+            return request_dict
+    raise HTTPException(status_code=404,detail="Transaction not found")
