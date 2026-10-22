@@ -1,11 +1,12 @@
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import date as date_type
 from typing import Annotated
 from decimal import Decimal
 
 
 class TransactionType(str, Enum):
+
     INCOME = "income"
     EXPENSE = "expense"
 
@@ -46,4 +47,5 @@ class TransactionCreate(BaseModel):
 
 class TransactionOut(TransactionCreate):
 
+    model_config = ConfigDict(from_attributes=True)
     id: Annotated[int, Field(description="This is id for each transaction")]

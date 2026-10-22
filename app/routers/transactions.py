@@ -1,6 +1,13 @@
+from typing import Annotated
+
 from fastapi import APIRouter, HTTPException, Depends
 from app.schemas import TransactionOut, TransactionCreate
-from typing import Annotated
+
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models import Transaction
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -15,18 +22,20 @@ async def get_transaction_or_404(transaction_id: int):
 
 
 @router.post("", status_code=201, response_model=TransactionOut)
-async def create_transaction(transaction: TransactionCreate):
-
-    request_dict = transaction.model_dump()
-    existing_ids = [t["id"] for t in transactions_db]
-    request_dict["id"] = max(existing_ids, default=0) + 1
-    transactions_db.append(request_dict)
-    return request_dict
+def create_transaction(
+    transaction_in: TransactionCreate, session: Annotated[Session, Depends(get_db)]
+):
+    data = transaction_in.model_dump()
+    new_transaction = Transaction(**data)
+    session.add(new_transaction)
+    session.commit()
+    session.refresh(new_transaction)
+    return new_transaction
 
 
 @router.get("", response_model=list[TransactionOut])
-async def list_transactions():
-    return transactions_db
+def list_transactions(session: Annotated[Session, Depends(get_db)]):
+    return session.scalars(select(Transaction)).all()
 
 
 @router.get("/{transaction_id}", response_model=TransactionOut)
