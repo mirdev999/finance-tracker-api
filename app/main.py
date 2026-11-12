@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from app.routers import transactions
+from app.routers import transactions, categories
 from app.config import settings
 from typing import Annotated
 from sqlalchemy.orm import Session
@@ -9,6 +9,7 @@ from app.database import get_db
 app = FastAPI(title=settings.app_name)
 
 app.include_router(transactions.router)
+app.include_router(categories.router)
 
 
 @app.get("/health", tags=["health"])
