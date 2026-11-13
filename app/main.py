@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Depends
-from app.routers import transactions, categories
-from app.config import settings
 from typing import Annotated
+
+from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+
 from app.database import get_db
+from app.routers import transactions, categories
+from app.config import settings
 
 app = FastAPI(title=settings.app_name)
 
