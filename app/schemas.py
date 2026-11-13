@@ -33,11 +33,11 @@ class TransactionCreate(BaseModel):
             description="from/to who (company/person) comes/goes the money",
         ),
     ]
-    category: Annotated[
-        str,
+    category_id: Annotated[
+        int,
         Field(
-            min_length=1,
-            description="Which category of expense/income does this apply to?",
+            gt=0,
+            description="id of the category this transaction belongs to",
         ),
     ]
     description: Annotated[

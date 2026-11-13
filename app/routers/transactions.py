@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Transaction
+from app.models import Transaction, Category
 from app.schemas import TransactionOut, TransactionCreate
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -24,8 +24,10 @@ def get_transaction_or_404(
 def create_transaction(
     transaction_in: TransactionCreate, session: Annotated[Session, Depends(get_db)]
 ):
-    data = transaction_in.model_dump()
-    new_transaction = Transaction(**data)
+    if session.get(Category, transaction_in.category_id) is None:
+        raise HTTPException(status_code=422, detail="Category does not exist")
+    dict_trans_in = transaction_in.model_dump()
+    new_transaction = Transaction(**dict_trans_in)
     session.add(new_transaction)
     session.commit()
     session.refresh(new_transaction)
@@ -61,6 +63,8 @@ def update_transaction(
     transaction_to_update: Annotated[Transaction, Depends(get_transaction_or_404)],
     session: Annotated[Session, Depends(get_db)],
 ):
+    if session.get(Category, transaction_in.category_id) is None:
+        raise HTTPException(status_code=422, detail="Category does not exist")
     transac_dict = transaction_in.model_dump()
     for field, value in transac_dict.items():
         setattr(transaction_to_update, field, value)
