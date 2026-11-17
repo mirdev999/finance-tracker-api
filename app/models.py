@@ -18,8 +18,10 @@ class Transaction(Base):
     date: Mapped[date_type]
     merchant: Mapped[str]
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
     description: Mapped[str | None]
     category: Mapped["Category"] = relationship(back_populates="transactions")
+    account: Mapped["Account"] = relationship(back_populates="transactions")
 
 
 class Category(Base):
@@ -28,3 +30,11 @@ class Category(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)
     transactions: Mapped[list["Transaction"]] = relationship(back_populates="category")
+
+
+class Account(Base):
+    __tablename__ = "accounts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(50), unique=True)
+    transactions: Mapped[list["Transaction"]] = relationship(back_populates="account")
