@@ -61,3 +61,14 @@ class CategoryOut(CategoryCreate):
 
     model_config = ConfigDict(from_attributes=True)
     id: Annotated[int, Field(description="This is the id for each category")]
+
+
+class AccountCreate(BaseModel):
+
+    name: Annotated[str, Field(min_length=1, max_length=50)]
+
+
+class AccountOut(AccountCreate):
+
+    model_config = ConfigDict(from_attributes=True)
+    id: Annotated[int, Field(description="this is the id for each account")]

@@ -5,13 +5,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from app.database import get_db
-from app.routers import transactions, categories
+from app.routers import transactions, categories, accounts
 from app.config import settings
 
 app = FastAPI(title=settings.app_name)
 
 app.include_router(transactions.router)
 app.include_router(categories.router)
+app.include_router(accounts.router)
 
 
 @app.get("/health", tags=["health"])
