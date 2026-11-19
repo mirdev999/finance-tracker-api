@@ -41,6 +41,9 @@ class TransactionCreate(BaseModel):
             description="ID of the category this transaction belongs to",
         ),
     ]
+    account_id: Annotated[
+        int, Field(gt=0, description="ID of the account this transaction belong to")
+    ]
     description: Annotated[
         str | None, Field(description="Information about the whole transaction")
     ] = None
