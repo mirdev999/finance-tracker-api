@@ -42,7 +42,7 @@ class TransactionCreate(BaseModel):
         ),
     ]
     account_id: Annotated[
-        int, Field(gt=0, description="ID of the account this transaction belong to")
+        int, Field(gt=0, description="ID of the account this transaction belongs to")
     ]
     description: Annotated[
         str | None, Field(description="Information about the whole transaction")
@@ -74,4 +74,4 @@ class AccountCreate(BaseModel):
 class AccountOut(AccountCreate):
 
     model_config = ConfigDict(from_attributes=True)
-    id: Annotated[int, Field(description="this is the id for each account")]
+    id: Annotated[int, Field(description="This is the id for each account")]
