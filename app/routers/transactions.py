@@ -20,14 +20,20 @@ def get_transaction_or_404(
     return targeted_transaction
 
 
-@router.post("", status_code=201, response_model=TransactionOut)
-def create_transaction(
-    transaction_in: TransactionCreate, session: Annotated[Session, Depends(get_db)]
+def check_category_and_account_exist(
+    transaction_in: TransactionCreate, session: Session
 ):
     if session.get(Category, transaction_in.category_id) is None:
         raise HTTPException(status_code=422, detail="Category does not exist")
     if session.get(Account, transaction_in.account_id) is None:
         raise HTTPException(status_code=422, detail="Account does not exist")
+
+
+@router.post("", status_code=201, response_model=TransactionOut)
+def create_transaction(
+    transaction_in: TransactionCreate, session: Annotated[Session, Depends(get_db)]
+):
+    check_category_and_account_exist(transaction_in, session)
     dict_trans_in = transaction_in.model_dump()
     new_transaction = Transaction(**dict_trans_in)
     session.add(new_transaction)
@@ -65,10 +71,7 @@ def update_transaction(
     transaction_to_update: Annotated[Transaction, Depends(get_transaction_or_404)],
     session: Annotated[Session, Depends(get_db)],
 ):
-    if session.get(Category, transaction_in.category_id) is None:
-        raise HTTPException(status_code=422, detail="Category does not exist")
-    if session.get(Account, transaction_in.account_id) is None:
-        raise HTTPException(status_code=422, detail="Account does not exist")
+    check_category_and_account_exist(transaction_in, session)
     transac_dict = transaction_in.model_dump()
     for field, value in transac_dict.items():
         setattr(transaction_to_update, field, value)
